@@ -43,10 +43,10 @@ export default function PricingPage() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-6xl flex-col px-4 py-10">
-      <Typography variant="h3" fontWeight={800} mb={1}>
+      <Typography variant="h3" sx={{ fontWeight: 800, mb: 1 }}>
         Simple pricing
       </Typography>
-      <Typography variant="body1" color="text.secondary" mb={4}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
         Start free and upgrade to Pro when you are ready.
       </Typography>
       {error ? <Alert severity="error">{error}</Alert> : null}
@@ -58,10 +58,10 @@ export default function PricingPage() {
             elevation={2}
           >
             <Stack spacing={1}>
-              <Typography variant="h5" fontWeight={700}>
+              <Typography variant="h5" sx={{ fontWeight: 700 }}>
                 {plan.name}
               </Typography>
-              <Typography variant="h4" fontWeight={800}>
+              <Typography variant="h4" sx={{ fontWeight: 800 }}>
                 {plan.price}
               </Typography>
               <Typography color="text.secondary">{plan.description}</Typography>

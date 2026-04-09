@@ -57,29 +57,29 @@ export default function DashboardPage() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-5xl flex-col px-4 py-10">
-      <Typography variant="h4" fontWeight={800} mb={2}>
+      <Typography variant="h4" sx={{ fontWeight: 800, mb: 2 }}>
         Chat history dashboard
       </Typography>
-      <Typography color="text.secondary" mb={3}>
+      <Typography color="text.secondary" sx={{ mb: 3 }}>
         View your saved multi-user conversations and latest AI responses.
       </Typography>
 
       {error ? <Alert severity="warning">{error}</Alert> : null}
 
-      <Stack spacing={2} mt={2}>
+      <Stack spacing={2} sx={{ mt: 2 }}>
         {rows.map((row) => (
           <Paper
             key={row.conversation.id}
             className="rounded-xl p-4 text-slate-900 dark:text-slate-100"
             elevation={1}
           >
-            <Typography fontWeight={700}>
+            <Typography sx={{ fontWeight: 700 }}>
               {row.conversation.title ?? "Untitled conversation"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Created: {new Date(row.conversation.created_at).toLocaleString()}
             </Typography>
-            <Typography mt={1}>
+            <Typography sx={{ mt: 1 }}>
               Last user: {row.lastMessage?.user_msg ?? "No messages yet"}
             </Typography>
             <Typography color="text.secondary">

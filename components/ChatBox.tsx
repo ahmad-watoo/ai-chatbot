@@ -7,7 +7,6 @@ import {
   Button,
   CircularProgress,
   IconButton,
-  InputAdornment,
   Divider,
   List,
   ListItemButton,
@@ -357,24 +356,20 @@ export function ChatBox() {
           New chat
         </Button>
         <Divider sx={{ mb: 1 }} />
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ mb: 1, alignItems: "center" }}>
           <HistoryRoundedIcon fontSize="small" />
           <Typography variant="subtitle2">History</Typography>
         </Stack>
-        <TextField
-          size="small"
-          placeholder="Search chats..."
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
-          sx={{ mb: 1 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchRoundedIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-        />
+        <Stack direction="row" spacing={1} sx={{ mb: 1, alignItems: "center" }}>
+          <SearchRoundedIcon fontSize="small" />
+          <TextField
+            size="small"
+            placeholder="Search chats..."
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            fullWidth
+          />
+        </Stack>
         <List dense className="max-h-[calc(100vh-220px)] overflow-y-auto">
           {filteredConversations.map((conversation) => (
             <ListItemButton
@@ -465,31 +460,31 @@ export function ChatBox() {
       </Box>
 
       <Stack className="h-full flex-1" spacing={0}>
-      <Box className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
-        <Typography variant="h6" fontWeight={700}>
-          AI Chatbot
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Powered by Next.js, OpenAI, and Supabase
-        </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<AddRoundedIcon />}
-          size="small"
-          onClick={handleNewChat}
-          sx={{ mt: 1, display: { xs: "inline-flex", md: "none" } }}
-        >
-          New chat
-        </Button>
-      </Box>
+        <Box className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            AI Chatbot
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Powered by Next.js, OpenAI, and Supabase
+          </Typography>
+          <Button
+            variant="outlined"
+            startIcon={<AddRoundedIcon />}
+            size="small"
+            onClick={handleNewChat}
+            sx={{ mt: 1, display: { xs: "inline-flex", md: "none" } }}
+          >
+            New chat
+          </Button>
+        </Box>
 
-      <Box className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100/60 px-3 py-4 dark:from-slate-950 dark:to-slate-900 sm:px-6">
-        <Stack spacing={2}>
-          {isBootLoading || isHistoryLoading ? (
-            <Box className="flex h-full min-h-[160px] items-center justify-center">
-              <CircularProgress size={24} />
-            </Box>
-          ) : null}
+        <Box className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100/60 px-3 py-4 dark:from-slate-950 dark:to-slate-900 sm:px-6">
+          <Stack spacing={2}>
+            {isBootLoading || isHistoryLoading ? (
+              <Box className="flex h-full min-h-[160px] items-center justify-center">
+                <CircularProgress size={24} />
+              </Box>
+            ) : null}
 
           {!isBootLoading &&
             !isHistoryLoading &&
@@ -503,7 +498,7 @@ export function ChatBox() {
                   <Stack
                     direction={isUser ? "row-reverse" : "row"}
                     spacing={1}
-                    alignItems="flex-end"
+                    sx={{ alignItems: "flex-end" }}
                   >
                     <Avatar
                       sx={{
@@ -536,67 +531,67 @@ export function ChatBox() {
               );
             })}
 
-          {isLoading && (
-            <Box className="flex justify-start">
-              <Paper
-                elevation={0}
-                className="rounded-2xl rounded-bl-sm bg-white px-4 py-2 text-slate-700 shadow-sm dark:bg-slate-800 dark:text-slate-100"
-              >
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <CircularProgress size={14} />
-                  <Typography variant="body2">AI is typing...</Typography>
-                </Stack>
-              </Paper>
-            </Box>
-          )}
-          <div ref={messagesEndRef} />
-        </Stack>
-      </Box>
+            {isLoading && (
+              <Box className="flex justify-start">
+                <Paper
+                  elevation={0}
+                  className="rounded-2xl rounded-bl-sm bg-white px-4 py-2 text-slate-700 shadow-sm dark:bg-slate-800 dark:text-slate-100"
+                >
+                  <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <CircularProgress size={14} />
+                    <Typography variant="body2">AI is typing...</Typography>
+                  </Stack>
+                </Paper>
+              </Box>
+            )}
+            <div ref={messagesEndRef} />
+          </Stack>
+        </Box>
 
-      <Box className="border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950 sm:p-4">
-        <Stack direction="row" spacing={1} alignItems="flex-end">
-          <TextField
-            fullWidth
-            minRows={1}
-            maxRows={5}
-            multiline
-            placeholder="Type your message..."
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                void handleSendMessage();
-              }
-            }}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                bgcolor: "background.paper",
-              },
-              "& .MuiInputBase-input": {
-                color: "text.primary",
-              },
-              "& .MuiInputBase-input::placeholder": {
-                color: "text.secondary",
-                opacity: 1,
-              },
-              "& .MuiInputLabel-root": {
-                color: "text.secondary",
-              },
-            }}
-          />
+        <Box className="border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950 sm:p-4">
+          <Stack direction="row" spacing={1} sx={{ alignItems: "flex-end" }}>
+            <TextField
+              fullWidth
+              minRows={1}
+              maxRows={5}
+              multiline
+              placeholder="Type your message..."
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  void handleSendMessage();
+                }
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  bgcolor: "background.paper",
+                },
+                "& .MuiInputBase-input": {
+                  color: "text.primary",
+                },
+                "& .MuiInputBase-input::placeholder": {
+                  color: "text.secondary",
+                  opacity: 1,
+                },
+                "& .MuiInputLabel-root": {
+                  color: "text.secondary",
+                },
+              }}
+            />
 
-          <Button
-            variant="contained"
-            onClick={() => void handleSendMessage()}
-            disabled={!canSend}
-            sx={{ minWidth: 52, height: 56 }}
-            aria-label="Send message"
-          >
-            <SendRoundedIcon />
-          </Button>
-        </Stack>
-      </Box>
+            <Button
+              variant="contained"
+              onClick={() => void handleSendMessage()}
+              disabled={!canSend}
+              sx={{ minWidth: 52, height: 56 }}
+              aria-label="Send message"
+            >
+              <SendRoundedIcon />
+            </Button>
+          </Stack>
+        </Box>
       </Stack>
     </Stack>
   );

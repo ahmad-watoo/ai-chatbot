@@ -48,10 +48,10 @@ export default function SignupPage() {
   return (
     <main className="mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-md items-center px-4 py-10">
       <Paper className="w-full rounded-2xl p-6 text-slate-900 dark:text-slate-100" elevation={2}>
-        <Typography variant="h5" fontWeight={700} mb={1}>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
           Create your account
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={3}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
           Sign up with Supabase. Your account will be stored in Supabase Auth and
           synced to your `profiles` table.
         </Typography>
