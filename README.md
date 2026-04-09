@@ -82,6 +82,15 @@ This creates:
 
 RLS policies are included for multi-user isolation.
 
+## Supabase Email Template (Signup Confirmation)
+
+Use `supabase/email-templates/confirm-signup.html` as your Auth email template:
+
+1. Go to Supabase Dashboard -> Authentication -> Email Templates.
+2. Open the "Confirm signup" template.
+3. Replace the HTML with the file content from `supabase/email-templates/confirm-signup.html`.
+4. Save and send a test email.
+
 ## Run Locally
 
 ```bash

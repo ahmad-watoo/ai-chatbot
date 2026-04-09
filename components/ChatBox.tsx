@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Drawer,
   IconButton,
   Divider,
   List,
@@ -27,6 +28,7 @@ import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { sendChatMessage } from "@/lib/api/chat";
@@ -52,6 +54,7 @@ export function ChatBox() {
   const [menuConversation, setMenuConversation] = useState<Conversation | null>(null);
   const [editingConversationId, setEditingConversationId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const canSend = useMemo(
@@ -145,6 +148,7 @@ export function ChatBox() {
   const handleNewChat = () => {
     setConversationId(undefined);
     setMessages([WELCOME_MESSAGE]);
+    setMobileHistoryOpen(false);
   };
 
   const openConversationMenu = (
@@ -159,6 +163,11 @@ export function ChatBox() {
   const closeConversationMenu = () => {
     setMenuAnchorEl(null);
     setMenuConversation(null);
+  };
+
+  const selectConversation = async (id: string) => {
+    await loadConversation(id);
+    setMobileHistoryOpen(false);
   };
 
   const startRenameConversation = () => {
@@ -344,8 +353,11 @@ export function ChatBox() {
   };
 
   return (
-    <Stack direction="row" className="h-full text-slate-900 dark:text-slate-100" spacing={0}>
-      <Box className="hidden h-full w-72 border-r border-slate-200 bg-white/90 p-3 dark:border-slate-800 dark:bg-slate-950/90 md:block">
+    <Stack direction="row" className="h-full" spacing={0} sx={{ color: "text.primary" }}>
+      <Box
+        className="hidden h-full w-72 p-3 md:block"
+        sx={{ borderRight: 1, borderColor: "divider", bgcolor: "background.paper" }}
+      >
         <Button
           variant="contained"
           startIcon={<AddRoundedIcon />}
@@ -375,18 +387,18 @@ export function ChatBox() {
             <ListItemButton
               key={conversation.id}
               selected={conversation.id === conversationId}
-              onClick={() => void loadConversation(conversation.id)}
+              onClick={() => void selectConversation(conversation.id)}
               sx={{
                 borderRadius: 1,
                 mb: 0.5,
                 bgcolor:
-                  conversation.id === conversationId ? "primary.main" : "transparent",
-                color:
                   conversation.id === conversationId
-                    ? "primary.contrastText"
-                    : "text.primary",
+                    ? "action.selected"
+                    : "transparent",
+                color:
+                  conversation.id === conversationId ? "primary.main" : "text.primary",
                 "&.Mui-selected:hover": {
-                  bgcolor: "primary.dark",
+                  bgcolor: "action.hover",
                 },
               }}
             >
@@ -428,7 +440,7 @@ export function ChatBox() {
                     sx={{
                       color:
                         conversation.id === conversationId
-                          ? "primary.contrastText"
+                          ? "primary.main"
                           : "text.secondary",
                     }}
                   >
@@ -459,8 +471,79 @@ export function ChatBox() {
         </Menu>
       </Box>
 
+      <Drawer
+        anchor="left"
+        open={mobileHistoryOpen}
+        onClose={() => setMobileHistoryOpen(false)}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": { width: 300, p: 1.5 },
+        }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<AddRoundedIcon />}
+          fullWidth
+          onClick={handleNewChat}
+          sx={{ mb: 2 }}
+        >
+          New chat
+        </Button>
+        <Divider sx={{ mb: 1 }} />
+        <Stack direction="row" spacing={1} sx={{ mb: 1, alignItems: "center" }}>
+          <HistoryRoundedIcon fontSize="small" />
+          <Typography variant="subtitle2">History</Typography>
+        </Stack>
+        <Stack direction="row" spacing={1} sx={{ mb: 1, alignItems: "center" }}>
+          <SearchRoundedIcon fontSize="small" />
+          <TextField
+            size="small"
+            placeholder="Search chats..."
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+            fullWidth
+          />
+        </Stack>
+        <List dense className="overflow-y-auto">
+          {filteredConversations.map((conversation) => (
+            <ListItemButton
+              key={conversation.id}
+              selected={conversation.id === conversationId}
+              onClick={() => void selectConversation(conversation.id)}
+              sx={{
+                borderRadius: 1,
+                mb: 0.5,
+                bgcolor:
+                  conversation.id === conversationId ? "action.selected" : "transparent",
+                color: conversation.id === conversationId ? "primary.main" : "text.primary",
+              }}
+            >
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  noWrap
+                  sx={{ fontWeight: conversation.id === conversationId ? 700 : 500 }}
+                >
+                  {conversation.pinned
+                    ? `📌 ${conversation.title ?? "Untitled chat"}`
+                    : (conversation.title ?? "Untitled chat")}
+                </Typography>
+              </Box>
+              <IconButton
+                size="small"
+                onClick={(event) => openConversationMenu(event, conversation)}
+              >
+                <MoreVertRoundedIcon fontSize="small" />
+              </IconButton>
+            </ListItemButton>
+          ))}
+        </List>
+      </Drawer>
+
       <Stack className="h-full flex-1" spacing={0}>
-        <Box className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
+        <Box
+          className="px-4 py-3"
+          sx={{ borderBottom: 1, borderColor: "divider", bgcolor: "background.paper" }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             AI Chatbot
           </Typography>
@@ -472,13 +555,25 @@ export function ChatBox() {
             startIcon={<AddRoundedIcon />}
             size="small"
             onClick={handleNewChat}
-            sx={{ mt: 1, display: { xs: "inline-flex", md: "none" } }}
+            sx={{ mt: 1, display: { xs: "inline-flex", md: "none" }, mr: 1 }}
           >
             New chat
           </Button>
+          <Button
+            variant="outlined"
+            startIcon={<MenuRoundedIcon />}
+            size="small"
+            onClick={() => setMobileHistoryOpen(true)}
+            sx={{ mt: 1, display: { xs: "inline-flex", md: "none" } }}
+          >
+            History
+          </Button>
         </Box>
 
-        <Box className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100/60 px-3 py-4 dark:from-slate-950 dark:to-slate-900 sm:px-6">
+        <Box
+          className="flex-1 overflow-y-auto px-3 py-4 sm:px-6"
+          sx={{ bgcolor: "background.default" }}
+        >
           <Stack spacing={2}>
             {isBootLoading || isHistoryLoading ? (
               <Box className="flex h-full min-h-[160px] items-center justify-center">
@@ -504,7 +599,7 @@ export function ChatBox() {
                       sx={{
                         width: 30,
                         height: 30,
-                        bgcolor: isUser ? "#0f172a" : "#334155",
+                        bgcolor: isUser ? "primary.main" : "grey.600",
                       }}
                     >
                       {isUser ? (
@@ -516,11 +611,14 @@ export function ChatBox() {
 
                     <Paper
                       elevation={0}
-                      className={`max-w-[75vw] rounded-2xl px-4 py-2 shadow-sm sm:max-w-[70%] ${
-                        isUser
-                          ? "rounded-br-sm bg-slate-900 text-white"
-                          : "rounded-bl-sm bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100"
-                      }`}
+                      className="max-w-[75vw] rounded-2xl px-4 py-2 shadow-sm sm:max-w-[70%]"
+                      sx={{
+                        borderRadius: 2,
+                        borderBottomRightRadius: isUser ? 4 : 16,
+                        borderBottomLeftRadius: isUser ? 16 : 4,
+                        bgcolor: isUser ? "primary.main" : "background.paper",
+                        color: isUser ? "primary.contrastText" : "text.primary",
+                      }}
                     >
                       <Typography variant="body1" className="whitespace-pre-wrap">
                         {message.content}
@@ -535,7 +633,8 @@ export function ChatBox() {
               <Box className="flex justify-start">
                 <Paper
                   elevation={0}
-                  className="rounded-2xl rounded-bl-sm bg-white px-4 py-2 text-slate-700 shadow-sm dark:bg-slate-800 dark:text-slate-100"
+                  className="rounded-2xl rounded-bl-sm px-4 py-2 shadow-sm"
+                  sx={{ bgcolor: "background.paper", color: "text.secondary" }}
                 >
                   <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                     <CircularProgress size={14} />
@@ -548,7 +647,10 @@ export function ChatBox() {
           </Stack>
         </Box>
 
-        <Box className="border-t border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950 sm:p-4">
+        <Box
+          className="p-3 sm:p-4"
+          sx={{ borderTop: 1, borderColor: "divider", bgcolor: "background.paper" }}
+        >
           <Stack direction="row" spacing={1} sx={{ alignItems: "flex-end" }}>
             <TextField
               fullWidth

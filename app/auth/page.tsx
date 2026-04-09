@@ -3,31 +3,32 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import { toast } from "react-toastify";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export default function AuthPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setError("");
-    setInfo("");
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     const { error: authError } = await supabaseBrowser.auth.signInWithPassword({
       email,
       password,
     });
     if (authError) {
-      setError(authError.message);
+      toast.error(authError.message);
+      setIsSubmitting(false);
       return;
     }
 
-    setInfo("Signed in successfully.");
+    toast.success("Signed in successfully.");
     router.push("/chat");
   };
 
@@ -43,8 +44,6 @@ export default function AuthPage() {
 
         <Box component="form" onSubmit={(event) => void onSubmit(event)}>
           <Stack spacing={2}>
-            {error ? <Alert severity="error">{error}</Alert> : null}
-            {info ? <Alert severity="success">{info}</Alert> : null}
             <TextField
               label="Email"
               type="email"
@@ -67,8 +66,8 @@ export default function AuthPage() {
                 "& .MuiInputLabel-root": { color: "text.secondary" },
               }}
             />
-            <Button type="submit" variant="contained">
-              Sign In
+            <Button type="submit" variant="contained" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </Button>
             <Typography variant="body2" color="text.secondary">
               New here?{" "}

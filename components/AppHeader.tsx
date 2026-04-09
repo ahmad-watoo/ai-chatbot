@@ -23,7 +23,12 @@ export function AppHeader() {
   });
 
   return (
-    <AppBar position="static" color="transparent" elevation={0}>
+    <AppBar
+      position="sticky"
+      color="transparent"
+      elevation={0}
+      sx={{ top: 0, zIndex: (theme) => theme.zIndex.appBar }}
+    >
       <Toolbar className="mx-auto w-full max-w-6xl flex-wrap gap-2 px-3 py-2 sm:px-6">
         <Typography
           variant="h6"
@@ -78,8 +83,18 @@ export function AppHeader() {
           <Stack
             direction="column"
             spacing={1}
-            className="w-full pb-1"
-            sx={{ display: { xs: "flex", md: "none" } }}
+            sx={{
+              display: { xs: "flex", md: "none" },
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              p: 1.5,
+              borderBottom: 1,
+              borderColor: "divider",
+              bgcolor: "background.paper",
+              boxShadow: 4,
+            }}
           >
             <Button
               component={Link}

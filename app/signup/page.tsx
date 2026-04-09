@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { Alert, Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import { toast } from "react-toastify";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
 export default function SignupPage() {
@@ -10,16 +11,16 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    setError("");
-    setInfo("");
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      toast.error("Passwords do not match.");
+      setIsSubmitting(false);
       return;
     }
 
@@ -34,15 +35,18 @@ export default function SignupPage() {
     });
 
     if (authError) {
-      setError(authError.message);
+      toast.error(authError.message);
+      setIsSubmitting(false);
       return;
     }
 
-    setInfo("Account created. Check your email for the confirmation link.");
+    toast.success("Signup successful.");
+    toast.info("Please check your email to confirm your account.");
     setFullName("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
+    setIsSubmitting(false);
   };
 
   return (
@@ -58,9 +62,6 @@ export default function SignupPage() {
 
         <Box component="form" onSubmit={(event) => void onSubmit(event)}>
           <Stack spacing={2}>
-            {error ? <Alert severity="error">{error}</Alert> : null}
-            {info ? <Alert severity="success">{info}</Alert> : null}
-
             <TextField
               label="Full Name"
               value={fullName}
@@ -89,8 +90,8 @@ export default function SignupPage() {
               fullWidth
             />
 
-            <Button type="submit" variant="contained">
-              Create Account
+            <Button type="submit" variant="contained" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Account"}
             </Button>
             <Typography variant="body2" color="text.secondary">
               Already have an account?{" "}
