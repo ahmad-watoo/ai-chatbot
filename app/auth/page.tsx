@@ -3,7 +3,18 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import VisibilityOffRounded from "@mui/icons-material/VisibilityOffRounded";
+import VisibilityRounded from "@mui/icons-material/VisibilityRounded";
+import {
+  Box,
+  Button,
+  IconButton,
+  InputAdornment,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -11,6 +22,7 @@ export default function AuthPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (event: FormEvent) => {
@@ -57,10 +69,25 @@ export default function AuthPage() {
             />
             <TextField
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               fullWidth
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        edge="end"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? <VisibilityOffRounded /> : <VisibilityRounded />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
               sx={{
                 "& .MuiInputBase-input": { color: "text.primary" },
                 "& .MuiInputLabel-root": { color: "text.secondary" },
